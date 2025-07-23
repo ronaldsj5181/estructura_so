@@ -3,67 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explorador Interactivo de Estructuras de SO</title>
-    <!-- Chosen Palette: Academic Teal & Parchment -->
-    <!-- Application Structure Plan: Se ha diseñado una aplicación de una sola página con una navegación superior fija (Inicio, Arquitecturas, Comparativa, Evolución) para un acceso claro y directo. La sección 'Arquitecturas' utiliza un sistema de pestañas para presentar cada estructura (Monolítica, Jerárquica, Microkernel) de forma aislada, evitando la sobrecarga de información. La 'Comparativa' utiliza un gráfico de radar interactivo para una visualización rápida de las compensaciones y una tabla detallada. La 'Evolución' emplea una línea de tiempo visual y un acordeón para las tendencias futuras. Esta estructura fue elegida para transformar el denso informe en una experiencia de aprendizaje segmentada, interactiva y no lineal, priorizando la usabilidad y la digestión de conceptos complejos sobre la estructura original del informe. -->
-    <!-- Visualization & Content Choices: 
-        - Resumen Ejecutivo (Inicio) -> Informar -> Bloque de texto con estilo -> Presentación clara del propósito.
-        - Arquitecturas (Monolítica, Jerárquica, Cliente-Servidor) -> Organizar/Comparar -> Pestañas con diagramas en HTML/CSS, texto y acordeones para ventajas/desventajas -> Permite al usuario enfocarse en una arquitectura a la vez, con diagramas simples que clarifican la estructura sin necesidad de imágenes. La interacción del acordeón reduce el desorden visual.
-        - Tabla Comparativa (Gráfico) -> Comparar -> Gráfico de Radar Interactivo (Chart.js) -> El gráfico de radar ofrece una comparación visual inmediata de las compensaciones clave.
-        - Tabla Comparativa (Detallada) -> Comparar -> Tabla HTML estática -> Proporciona los detalles granulares de la comparación. Objetivo: permitir la comparación tanto a alto nivel como en detalle.
-        - Hitos Históricos -> Cambio/Evolución -> Línea de tiempo interactiva (HTML/CSS/JS) -> Transforma una lista de fechas en una narrativa visual y explorable, mejorando el engagement.
-        - Tendencias Futuras -> Informar -> Acordeón (HTML/CSS/JS) -> Presenta conceptos emergentes de forma concisa, permitiendo al usuario explorar solo los que le interesan.
-        - Todos los elementos se implementan con HTML/CSS/JS y la librería Chart.js, cumpliendo con la restricción de NO SVG y NO Mermaid. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Análisis Unificado de Arquitecturas de Sistemas Operativos</title>
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
+        :root {
+            --bg-dark: #111827;
+            --bg-card: rgba(31, 41, 55, 0.5);
+            --border-color: rgba(75, 85, 99, 0.5);
+            --text-light: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-blue: #3b82f6;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --accent-amber: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #F8F4E3;
-            color: #2c3e50;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.7;
         }
+
+        /* --- Encabezado y Navegación --- */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: rgba(17, 24, 39, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            flex-wrap: wrap;
+        }
+
         .nav-link {
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 600;
             transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 3px solid transparent;
         }
+
+        .nav-link:hover {
+            color: var(--text-light);
+        }
+
         .nav-link.active {
-            color: #1E88E5;
-            border-bottom-color: #1E88E5;
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
         }
-        .tab.active {
-            background-color: #1E88E5;
-            color: #ffffff;
+
+        /* --- Contenedor Principal y Secciones --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+        
+        .page-section {
+            padding-top: 5rem;
+            margin-top: -3.5rem; /* Offset for sticky header */
+        }
+
+        /* --- Elementos de Estilo (Tarjetas, Títulos) --- */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        h1, h2, h3, h4 {
+            line-height: 1.3;
+            margin-bottom: 1rem;
+        }
+        
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            text-align: center;
+            color: var(--text-light);
+        }
+        
+        h2 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            color: var(--accent-blue);
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: var(--text-light);
+        }
+        h4 {
+            font-size: 1.2rem;
+            color: var(--accent-amber);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            max-width: 800px;
+            margin: -0.5rem auto 2.5rem auto;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* --- Pestañas de Arquitecturas --- */
+        .tabs-container {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--border-color);
+            background-color: transparent;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .tab-button:hover {
+            background-color: var(--bg-card);
+            color: var(--text-light);
+        }
+        .tab-button.active {
+            color: var(--text-light);
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+        .tab-content { display: none; }
+        .tab-content.active {
+             display: block;
+             animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Acordeones --- */
+        .accordion-header {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: none;
+            padding: 1rem;
+            color: var(--text-light);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            transition: background-color 0.3s;
+        }
+        .accordion-header:hover {
+             background-color: rgba(255, 255, 255, 0.1);
         }
         .accordion-content {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.5s ease-in-out;
+            background: rgba(0,0,0,0.2);
+            padding: 0 1rem;
+            border-radius: 0 0 0.5rem 0.5rem;
         }
-        .architecture-diagram {
-            border: 2px solid #34495e;
-            padding: 1rem;
-            min-height: 200px;
-            background-color: #ffffff;
-        }
-        .timeline-item-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-out, padding 0.5s ease-out, opacity 0.5s ease-out;
-            opacity: 0;
-        }
-        .timeline-item.active .timeline-item-content {
-            opacity: 1;
-        }
+        .accordion-content div { padding: 1rem 0; }
+
+        /* --- Gráficos y Tablas --- */
         .chart-container {
             position: relative;
             margin: auto;
             height: 50vh;
-            max-height: 400px;
+            max-height: 450px;
             width: 100%;
-            max-width: 500px;
+            max-width: 550px;
         }
         table {
             width: 100%;
@@ -71,596 +216,623 @@
             margin-top: 1.5rem;
         }
         th, td {
-            border: 1px solid #e2e8f0;
-            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
             text-align: left;
         }
         th {
-            background-color: #e0f2f7;
+            background-color: var(--bg-card);
             font-weight: 600;
-            color: #2c3e50;
         }
-        tr:nth-child(even) {
-            background-color: #f8faff;
+        tr:nth-child(even) { background-color: rgba(0,0,0,0.1); }
+
+        /* --- Línea de Tiempo --- */
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
         }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--border-color);
+            border-radius: 2px;
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-left: 3rem;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0.25rem;
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 50%;
+            background-color: var(--bg-dark);
+            border: 4px solid var(--accent-blue);
+            transition: transform 0.3s;
+        }
+        .timeline-item.active::before {
+            transform: scale(1.2);
+        }
+        .timeline-header {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            cursor: pointer;
+        }
+        .timeline-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, margin-top 0.5s ease-out;
+            color: var(--text-muted);
+        }
+        .timeline-item.active .timeline-content {
+            margin-top: 0.5rem;
+            max-height: 200px; /* Adjust as needed */
+        }
+        
+        /* --- Elementos Diversos (Analogías, etc.) --- */
+        .analogy {
+            background: rgba(245, 158, 11, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-left: 4px solid var(--accent-amber);
+        }
+        .examples-container {
+            display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;
+        }
+        .example-tag {
+            background: var(--bg-card); padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.9rem;
+        }
+        .grid-2 { display: grid; gap: 2rem; }
+
+        /* --- Responsividad --- */
+        @media (min-width: 768px) {
+            .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            nav { justify-content: space-around; }
+            .nav-link { padding: 0.8rem 0.5rem; font-size: 0.9rem; }
+        }
+
     </style>
 </head>
-<body class="antialiased">
+<body>
 
-    <header class="bg-[#F8F4E3] sticky top-0 z-50 shadow-md">
-        <nav class="container mx-auto px-6 py-3">
-            <div class="flex justify-between items-center">
-                <h1 class="text-xl md:text-2xl font-bold text-[#2c3e50]">Estructuras de SO</h1>
-                <div class="hidden md:flex space-x-8">
-                    <a href="#inicio" class="nav-link border-b-2 border-transparent pb-1">Inicio</a>
-                    <a href="#arquitecturas" class="nav-link border-b-2 border-transparent pb-1">Arquitecturas</a>
-                    <a href="#comparativa" class="nav-link border-b-2 border-transparent pb-1">Comparativa</a>
-                    <a href="#evolucion" class="nav-link border-b-2 border-transparent pb-1">Evolución</a>
-                </div>
-                <div class="md:hidden">
-                    <button id="mobile-menu-button" class="text-[#2c3e50] focus:outline-none">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-                    </button>
-                </div>
-            </div>
-            <div id="mobile-menu" class="hidden md:hidden mt-4">
-                 <a href="#inicio" class="block py-2 px-4 text-sm nav-link">Inicio</a>
-                 <a href="#arquitecturas" class="block py-2 px-4 text-sm nav-link">Arquitecturas</a>
-                 <a href="#comparativa" class="block py-2 px-4 text-sm nav-link">Comparativa</a>
-                 <a href="#evolucion" class="block py-2 px-4 text-sm nav-link">Evolución</a>
-            </div>
+    <header>
+        <nav id="navbar">
+            <a href="#inicio" class="nav-link active">Inicio</a>
+            <a href="#arquitecturas" class="nav-link">Arquitecturas</a>
+            <a href="#comparativa" class="nav-link">Comparativa</a>
+            <a href="#evolucion" class="nav-link">Evolución y Futuro</a>
+            <a href="#conclusion" class="nav-link">Conclusión</a>
         </nav>
     </header>
 
-    <main class="container mx-auto px-6 py-8">
-        
-        <section id="inicio" class="page-section min-h-screen pt-16">
-            <div class="max-w-4xl mx-auto text-center">
-                <h2 class="text-4xl font-bold mb-4 text-[#1E88E5]">Explorador Interactivo de Estructuras de Sistemas Operativos</h2>
-                <p class="text-lg text-gray-700 mb-6">Un análisis comparativo de las arquitecturas Monolítica, Jerárquica y Cliente-Servidor.</p>
-                <p class="text-md text-gray-600 leading-relaxed">
-                    Esta aplicación transforma un denso informe de investigación en una experiencia de aprendizaje interactiva. Los sistemas operativos son la base de la computación moderna, y su arquitectura interna define su rendimiento, seguridad y fiabilidad. Explore las tres estructuras fundamentales para comprender las compensaciones críticas que enfrentan los diseñadores de SO. Utilice la navegación para descubrir cada paradigma, comparar sus características visualmente y trazar su evolución histórica.
-                </p>
+    <main class="container">
+
+        <section id="inicio" class="page-section">
+            <div class="card">
+                <h1 style="border-bottom:none; margin-bottom: 2rem;">Análisis de Arquitecturas de Sistemas Operativos</h1>
+                <p class="section-subtitle" style="font-size: 1.2rem; margin-top: -1rem;">Una exploración interactiva y unificada de los modelos Monolítico, Jerárquico y Cliente-Servidor.</p>
+                <div class="grid-2">
+                    <div>
+                        <h3>Resumen del Estudio</h3>
+                        <p>La estructura interna de un sistema operativo (SO) es un factor determinante en su rendimiento, fiabilidad, seguridad y mantenibilidad. Este análisis explora tres arquitecturas fundamentales: monolítica, jerárquica y cliente-servidor (microkernel). El estudio revela que no existe una estructura universalmente superior; la elección depende de los objetivos específicos del sistema. Las tendencias modernas se inclinan hacia modelos híbridos que buscan combinar lo mejor de cada mundo.</p>
+                    </div>
+                    <div>
+                        <h3>Planteamiento y Fundamentos</h3>
+                        <p><strong>Problema:</strong> La falta de una comprensión clara de estas arquitecturas puede llevar a una elección subóptima de SO para una tarea determinada.</p>
+                        <p><strong>Pregunta de investigación:</strong> <i>¿Cuáles son las características, ventajas, desventajas e implicaciones prácticas de las estructuras monolítica, jerárquica y cliente-servidor?</i></p>
+                        <p><strong>Concepto clave:</strong> La separación entre <strong>Modo Usuario</strong> (restringido) y <strong>Modo Kernel</strong> (privilegiado) es esencial para la protección del sistema, y la comunicación entre ambos se realiza mediante <strong>Llamadas al Sistema</strong>.</p>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <section id="arquitecturas" class="page-section min-h-screen pt-16">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-[#1E88E5]">Paradigmas Arquitectónicos</h2>
-                <p class="text-md text-gray-600 mt-2 max-w-3xl mx-auto">Cada arquitectura de sistema operativo ofrece un enfoque único para gestionar los recursos del sistema, con distintas ventajas y desventajas. Seleccione una pestaña para explorar en profundidad los principios de diseño, el funcionamiento interno y los ejemplos del mundo real de cada estructura.</p>
-            </div>
+        <section id="arquitecturas" class="page-section">
+            <h2>Paradigmas Arquitectónicos</h2>
+            <p class="section-subtitle">Cada arquitectura ofrece un enfoque único para gestionar los recursos del sistema. Seleccione una pestaña para explorar en profundidad sus principios, ventajas y desventajas.</p>
             
-            <div class="max-w-5xl mx-auto">
-                <div class="flex border-b border-gray-300">
-                    <button class="tab flex-1 py-2 px-4 text-center font-semibold text-gray-600 focus:outline-none" data-tab="monolitica">Monolítica</button>
-                    <button class="tab flex-1 py-2 px-4 text-center font-semibold text-gray-600 focus:outline-none" data-tab="jerarquica">Jerárquica</button>
-                    <button class="tab flex-1 py-2 px-4 text-center font-semibold text-gray-600 focus:outline-none" data-tab="microkernel">Cliente-Servidor</button>
+            <div class="tabs-container">
+                <button class="tab-button active" data-tab="monolitica">Monolítica</button>
+                <button class="tab-button" data-tab="jerarquica">Jerárquica</button>
+                <button class="tab-button" data-tab="clienteservidor">Cliente-Servidor (Microkernel)</button>
+            </div>
+
+            <div class="card">
+                <div id="monolitica" class="tab-content active">
+                    <h3>Estructura Monolítica: El Gigante Unificado</h3>
+                    <p>Todo el sistema operativo se ejecuta como un único y gran programa en el modo privilegiado (modo kernel). Los componentes como la gestión de procesos, memoria, sistema de archivos y controladores están fuertemente acoplados y se comunican mediante llamadas a funciones directas, lo que maximiza el rendimiento.</p>
+                    <div class="analogy">
+                        <h4>Analogía: El Taller del Artesano Integral</h4>
+                        <p>Imagine un taller donde un único artesano tiene todas sus herramientas a mano. Es increíblemente eficiente porque no pierde tiempo. Sin embargo, si una herramienta falla o el artesano comete un error, todo el trabajo se detiene por completo.</p>
+                    </div>
+                    <div class="grid-2">
+                        <div>
+                            <h4 style="color:var(--accent-green);">Ventajas</h4>
+                            <ul>
+                                <li>🚀 <strong>Alto Rendimiento:</strong> La comunicación interna es extremadamente rápida y eficiente.</li>
+                                <li>🧩 <strong>Simplicidad Conceptual:</strong> El modelo es fácil de entender inicialmente, ya que todo está en un solo lugar.</li>
+                            </ul>
+                            <h4 style="color:var(--accent-red); margin-top:1rem;">Desventajas</h4>
+                            <ul>
+                                <li>🛡️ <strong>Baja Fiabilidad y Seguridad:</strong> Un error en cualquier componente (p. ej., un controlador) puede hacer caer todo el sistema.</li>
+                                <li>🔧 <strong>Difícil de Mantener:</strong> En un código masivo y acoplado, encontrar y corregir errores es una tarea titánica.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4>Diagrama Estructural</h4>
+                            <div style="font-family: monospace; background: #111; padding: 1rem; border-radius: 8px; text-align: center; border: 1px solid var(--border-color);">
+                                <pre>
+APLICACIONES (Modo Usuario)
+     |
+Llamada al Sistema (TRAP)
+-----+----------------------
+     |
+[MODO KERNEL - Espacio Único]
+|-----------------------------|
+| Gestor   | Gestor   | S.A.  |
+| Procesos | Memoria  | Fich. |
+|-----------------------------|
+|      Controladores          |
+|-----------------------------|
+     |
+-----+----------------------
+     |
+  HARDWARE</pre>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="accordion-header">Ver más detalles y Ejemplos</button>
+                    <div class="accordion-content">
+                        <div>
+                            <h4>El Monolítico Modular Moderno</h4>
+                            <p>Sistemas como <strong>Linux</strong> superan las limitaciones del modelo puro mediante <strong>Módulos de Kernel Cargables (LKMs)</strong>. Estos módulos (ej. drivers) se pueden cargar y descargar en tiempo de ejecución. Sin embargo, una vez cargado, un módulo se convierte en parte del kernel, compartiendo el mismo espacio de memoria y privilegios. Por ello, un fallo en un módulo sigue siendo catastrófico.</p>
+                            <h4>Ejemplos Notables:</h4>
+                            <div class="examples-container">
+                                <span class="example-tag">Linux</span>
+                                <span class="example-tag">UNIX (Clásico)</span>
+                                <span class="example-tag">MS-DOS</span>
+                                <span class="example-tag">FreeBSD</span>
+                                <span class="example-tag">Solaris</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div id="tab-content" class="mt-8">
+                <div id="jerarquica" class="tab-content">
+                    <h3>Estructura Jerárquica: El Edificio por Capas</h3>
+                    <p>El sistema se organiza en una jerarquía de capas. Cada capa se construye sobre la inferior y solo puede usar los servicios de la capa inmediatamente adyacente, ocultando la complejidad interna. Fue pionera en la abstracción y la ingeniería de software.</p>
+                     <div class="analogy">
+                        <h4>Analogía: La Jerarquía Corporativa</h4>
+                        <p>Pensemos en una gran empresa. Un empleado no puede hablar directamente con el CEO. Debe seguir una cadena de mando (supervisor, gerente, director). Es un sistema ordenado y controlado, pero muy lento e ineficiente para tomar decisiones rápidas.</p>
+                    </div>
+                    <div class="grid-2">
+                        <div>
+                            <h4 style="color:var(--accent-green);">Ventajas</h4>
+                            <ul>
+                                <li>🏗️ <strong>Modularidad y Abstracción:</strong> Facilita la comprensión y el desarrollo al dividir el sistema.</li>
+                                <li>🐞 <strong>Facilidad de Depuración:</strong> Permite probar y verificar el sistema capa por capa.</li>
+                            </ul>
+                            <h4 style="color:var(--accent-red); margin-top:1rem;">Desventajas</h4>
+                            <ul>
+                                <li>🐢 <strong>Bajo Rendimiento:</strong> Cada llamada que atraviesa múltiples capas añade una sobrecarga significativa.</li>
+                                <li>⚙️ <strong>Dificultad de Diseño:</strong> Definir las capas de forma limpia y eficiente es muy difícil.</li>
+                            </ul>
+                        </div>
+                        <div>
+                           <h4>Diagrama Estructural</h4>
+                            <div style="font-family: monospace; background: #111; padding: 1rem; border-radius: 8px; text-align: center; border: 1px solid var(--border-color);">
+                                <pre>
++-------------------------+
+| Capa N: Interfaz Usuario|
++-------------------------+
+             ↕
++-------------------------+
+| Capa N-1: Prg. Usuario |
++-------------------------+
+             ↕
++-------------------------+
+| Capa 3: Gestión de E/S  |
++-------------------------+
+             ...
+             ↕
++-------------------------+
+| Capa 0: Planif. de CPU  |
++-------------------------+
+             ↕
++-------------------------+
+|        Hardware         |
++-------------------------+</pre>
+                            </div>
+                        </div>
+                    </div>
+                     <button class="accordion-header">Ver más detalles y Ejemplos</button>
+                    <div class="accordion-content">
+                        <div>
+                             <h4>Conceptos Históricos</h4>
+                             <p>Aunque menos común en estado puro hoy en día, sus principios de diseño son fundamentales. El <strong>Sistema THE</strong> de Dijkstra es el arquetipo, diseñado para ser matemáticamente demostrable. <strong>MULTICS</strong> usaba "anillos de protección" del hardware para implementar las capas.</p>
+                            <h4>Ejemplos Notables:</h4>
+                            <div class="examples-container">
+                               <span class="example-tag">Sistema THE</span>
+                               <span class="example-tag">MULTICS</span>
+                               <span class="example-tag">OS/2</span>
+                               <span class="example-tag">Windows NT (influencias)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="clienteservidor" class="tab-content">
+                    <h3>Estructura Cliente-Servidor (Microkernel)</h3>
+                    <p>El kernel se reduce al mínimo absoluto (gestión de memoria, hilos y comunicación entre procesos - IPC). El resto de servicios (sistema de archivos, red, drivers) son procesos de usuario llamados "servidores", que se comunican a través de mensajes.</p>
+                    <div class="analogy">
+                        <h4>Analogía: La Infraestructura de una Ciudad</h4>
+                        <p>El ayuntamiento (microkernel) solo gestiona lo esencial: carreteras y direcciones. El resto son empresas privadas (servidores): la eléctrica, la de aguas, etc. Si la empresa de basuras va a la huelga, la ciudad no se paraliza. Es un modelo muy fiable, pero coordinar todo es más lento.</p>
+                    </div>
+                     <div class="grid-2">
+                        <div>
+                            <h4 style="color:var(--accent-green);">Ventajas</h4>
+                            <ul>
+                                <li>🛡️ <strong>Alta Fiabilidad y Seguridad:</strong> Si un servidor falla, no afecta al resto del sistema. Puede reiniciarse.</li>
+                                <li>🧩 <strong>Alta Modularidad y Flexibilidad:</strong> Añadir un nuevo servicio es tan simple como crear un nuevo programa.</li>
+                            </ul>
+                             <h4 style="color:var(--accent-red); margin-top:1rem;">Desventajas</h4>
+                            <ul>
+                                <li>🐢 <strong>Rendimiento Inferior:</strong> La comunicación mediante mensajes (IPC) añade una sobrecarga significativa.</li>
+                                <li>🧠 <strong>Complejidad de Diseño:</strong> Gestionar la comunicación asíncrona entre múltiples servidores es complejo.</li>
+                            </ul>
+                        </div>
+                        <div>
+                           <h4>Diagrama Estructural</h4>
+                            <div style="font-family: monospace; background: #111; padding: 1rem; border-radius: 8px; text-align: center; border: 1px solid var(--border-color);">
+                                <pre>
+[MODO USUARIO]
++-----------+ +---------+
+| Cliente A | | Cliente B |
++-----------+ +---------+
+      \         /
+       \       /
++-------------------+
+| Servidor Ficheros |
++-------------------+
+          ↕ (IPC)
+-----+-----------------
+     | [MODO KERNEL]
++-------------+
+| Microkernel |
++-------------+
+     |
+-----+-----------------
+     |
+  HARDWARE</pre>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="accordion-header">Ver más detalles y Ejemplos</button>
+                    <div class="accordion-content">
+                        <div>
+                            <h4>El Enfoque Híbrido</h4>
+                            <p>Sistemas modernos como <strong>macOS y iOS (con su kernel XNU)</strong> adoptan un enfoque híbrido. Combinan un microkernel (Mach) para la mensajería y la gestión básica, con componentes monolíticos (de BSD) para tareas que demandan alto rendimiento, logrando un equilibrio entre fiabilidad y velocidad.</p>
+                            <h4>Ejemplos Notables:</h4>
+                            <div class="examples-container">
+                               <span class="example-tag">QNX</span>
+                               <span class="example-tag">Minix 3</span>
+                               <span class="example-tag">Mach</span>
+                               <span class="example-tag">L4 Family</span>
+                               <span class="example-tag">macOS / iOS (Híbrido)</span>
+                               <span class="example-tag">Symbian</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section id="comparativa" class="page-section min-h-screen pt-16">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-[#1E88E5]">Análisis Comparativo</h2>
-                <p class="text-md text-gray-600 mt-2 max-w-3xl mx-auto">No existe una arquitectura "perfecta". La elección correcta implica una compensación entre factores críticos. El siguiente gráfico de radar visualiza estas diferencias, mostrando cómo cada arquitectura prioriza ciertos atributos sobre otros. Además, se presenta una tabla detallada para una comparación granular.</p>
+        <section id="comparativa" class="page-section">
+            <h2>Análisis Comparativo</h2>
+            <p class="section-subtitle">No existe una arquitectura "perfecta". La elección implica una compensación entre factores críticos. El gráfico visualiza estas diferencias, y la tabla ofrece un análisis detallado.</p>
+            <div class="card">
+                <div class="grid-2" style="align-items: center;">
+                    <div>
+                        <h3>Visualización de Atributos Clave</h3>
+                        <p style="text-align:center; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Pase el cursor sobre los criterios en el gráfico para ver el análisis detallado.</p>
+                        <div class="chart-container">
+                            <canvas id="comparisonRadarChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 id="analysis-title">Análisis Detallado</h3>
+                        <p id="analysis-text" style="min-height: 150px; color: var(--text-muted);">Pase el cursor sobre un criterio en el gráfico para ver los detalles aquí.</p>
+                    </div>
+                </div>
             </div>
-            <div class="bg-white p-4 sm:p-8 rounded-xl shadow-lg max-w-4xl mx-auto">
-                <h3 class="text-2xl font-bold mb-6 text-[#2c3e50] text-center">Gráfico de Radar Comparativo</h3>
-                <div class="chart-container mx-auto">
-                    <canvas id="comparisonChart"></canvas>
-                </div>
-                 <div class="mt-8 text-sm text-center text-gray-500">
-                    <p>Pase el cursor sobre los puntos para más detalles. La escala va de 'Bajo' (centro) a 'Alto' (borde).</p>
-                </div>
-
-                <h3 class="text-2xl font-bold mt-12 mb-6 text-[#2c3e50] text-center">Tabla Comparativa Detallada</h3>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white rounded-lg shadow">
+            <div class="card">
+                <h3>Tabla Comparativa Detallada</h3>
+                <div style="overflow-x: auto;">
+                    <table>
                         <thead>
                             <tr>
-                                <th>Característica / Aspecto</th>
+                                <th>Característica</th>
                                 <th>Monolítica</th>
-                                <th>Jerárquica (en Capas)</th>
+                                <th>Jerárquica</th>
                                 <th>Microkernel</th>
                                 <th>Híbrida</th>
                             </tr>
                         </thead>
-                        <tbody id="comparisonTableBody">
-                            <!-- Table rows will be inserted here by JavaScript -->
+                        <tbody>
+                            <tr>
+                                <td><strong>Rendimiento</strong></td><td>Alto</td><td>Lento</td><td>Bajo-Medio</td><td>Equilibrado</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Seguridad</strong></td><td>Baja</td><td>Media</td><td>Alta</td><td>Media-Alta</td>
+                            </tr>
+                             <tr>
+                                <td><strong>Fiabilidad</strong></td><td>Baja</td><td>Media</td><td>Muy Alta</td><td>Alta</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Modularidad</strong></td><td>Baja</td><td>Alta</td><td>Muy Alta</td><td>Alta</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mantenibilidad</strong></td><td>Baja</td><td>Alta</td><td>Alta</td><td>Media-Baja</td>
+                            </tr>
+                             <tr>
+                                <td><strong>Complejidad Dev.</strong></td><td>Simple (inicio)</td><td>Compleja</td><td>Alta</td><td>Muy Alta</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ejemplos</strong></td><td>Linux, UNIX</td><td>THE, Multics</td><td>QNX, Minix 3</td><td>Windows, macOS</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <section id="evolucion" class="page-section min-h-screen pt-16">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-[#1E88E5]">Evolución y Futuro</h2>
-                <p class="text-md text-gray-600 mt-2 max-w-3xl mx-auto">El diseño de sistemas operativos ha evolucionado constantemente en respuesta a los avances del hardware y las nuevas demandas computacionales. Explore la línea de tiempo de los hitos históricos y descubra las arquitecturas emergentes que están dando forma al futuro.</p>
-            </div>
-            
-            <div class="max-w-4xl mx-auto">
-                <h3 class="text-2xl font-bold text-center mb-8 text-[#2c3e50]">Hitos Históricos</h3>
-                <div id="timeline-container" class="relative">
+        <section id="evolucion" class="page-section">
+            <h2>Evolución y Futuro</h2>
+            <p class="section-subtitle">El diseño de SO ha evolucionado constantemente en respuesta a los avances del hardware y las nuevas demandas. Explore los hitos históricos y las arquitecturas emergentes.</p>
+             <div class="grid-2">
+                <div class="card">
+                    <h3>Hitos Históricos</h3>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <h4 class="timeline-header">1960s: Multiprogramación</h4>
+                            <div class="timeline-content">Sistemas como CTSS y Multics introducen el tiempo compartido, permitiendo la interacción simultánea de múltiples usuarios y sentando las bases del diseño por capas.</div>
+                        </div>
+                        <div class="timeline-item">
+                            <h4 class="timeline-header">1971: UNIX</h4>
+                            <div class="timeline-content">Revoluciona el diseño de SO con su simplicidad, portabilidad y una potente arquitectura monolítica que influyó en generaciones de sistemas.</div>
+                        </div>
+                        <div class="timeline-item">
+                            <h4 class="timeline-header">1982: QNX</h4>
+                            <div class="timeline-content">Uno de los primeros y más exitosos microkernels comerciales, demostrando la viabilidad del modelo para sistemas de tiempo real y de misión crítica.</div>
+                        </div>
+                         <div class="timeline-item">
+                            <h4 class="timeline-header">1993: Windows NT</h4>
+                            <div class="timeline-content">Introduce una arquitectura híbrida, combinando la velocidad monolítica con la modularidad de los subsistemas, sentando las bases para las versiones modernas de Windows.</div>
+                        </div>
+                         <div class="timeline-item">
+                            <h4 class="timeline-header">2007: iOS & Android</h4>
+                            <div class="timeline-content">El auge de los SO móviles (basados en kernels híbridos y monolíticos modificados) redefine la interacción y optimiza los sistemas para la eficiencia energética y la computación táctil.</div>
+                        </div>
+                    </div>
                 </div>
+                <div class="card">
+                    <h3>Tendencias Emergentes</h3>
+                    <button class="accordion-header">Exokernels</button>
+                    <div class="accordion-content">
+                        <div>Un enfoque radical que minimiza la abstracción del kernel, trasladando la gestión de recursos a las aplicaciones. El kernel solo se encarga de la multiplexación segura del hardware, ofreciendo un rendimiento potencial extremo a costa de una mayor complejidad.</div>
+                    </div>
+                    <button class="accordion-header">Unikernels</button>
+                    <div class="accordion-content">
+                        <div>Sistemas altamente especializados donde las bibliotecas del SO se enlazan con la aplicación para formar una imagen de máquina única y mínima. Eliminan la separación usuario/kernel, ofreciendo seguridad y rendimiento superiores para microservicios, IoT y computación sin servidor.</div>
+                    </div>
+                     <button class="accordion-header">Sistemas Operativos en la Nube (Cloud OS)</button>
+                    <div class="accordion-content">
+                        <div>No es un SO tradicional, sino un entorno que abstrae, agrupa y gestiona recursos escalables (cómputo, almacenamiento) a través de la nube, utilizando virtualización y automatización para ofrecer servicios bajo demanda.</div>
+                    </div>
+                    <button class="accordion-header">Impacto de la Inteligencia Artificial</button>
+                    <div class="accordion-content">
+                        <div>La IA se integra en el SO para optimizar proactivamente el rendimiento (ej. planificación de procesos, gestión de energía) y mejorar la interacción del usuario a través de asistentes inteligentes y automatización de tareas.</div>
+                    </div>
+                </div>
+             </div>
+        </section>
 
-                <h3 class="text-2xl font-bold text-center mt-16 mb-8 text-[#2c3e50]">Tendencias Emergentes</h3>
-                <div id="trends-accordion" class="space-y-4">
+        <section id="conclusion" class="page-section">
+            <h2>Conclusiones y Recomendaciones</h2>
+            <p class="section-subtitle">No existe una estructura "ganadora" universal. La elección depende críticamente de los requisitos no funcionales del sistema objetivo.</p>
+            <div class="card">
+                <div class="grid-2">
+                    <div>
+                        <h3>El Trade-Off Fundamental</h3>
+                        <p>El dilema central en el diseño de arquitecturas de SO es casi siempre <strong>Rendimiento vs. Fiabilidad y Modularidad</strong>.</p>
+                        <ul>
+                            <li><strong style="color:var(--accent-red)">Monolítica:</strong> Prioriza el rendimiento por encima de todo.</li>
+                            <li><strong style="color:var(--accent-blue)">Jerárquica:</strong> Menos común en estado puro hoy, pero sus principios de abstracción influyen en SOs modernos.</li>
+                            <li><strong style="color:var(--accent-green)">Cliente-Servidor:</strong> Prioriza la fiabilidad, seguridad y flexibilidad, a costa de un cierto impacto en el rendimiento.</li>
+                            
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Recomendaciones Prácticas</h3>
+                        <p>Basado en el análisis, se sugiere:</p>
+                        <ol style="list-style-position: inside; padding-left: 1rem;">
+                            <li>Para sistemas de <strong>misión crítica</strong> (automotriz, aviónica, médico), evaluar arquitecturas basadas en microkernel como QNX o L4.</li>
+                            <li>Para <strong>desarrollo de nuevos servicios o drivers</strong>, aprovechar al máximo la modularidad (LKMs en Linux, subsistemas en Windows) para aislar el desarrollo y mejorar la mantenibilidad.</li>
+                            <li>Para <strong>servidores y computación de alto rendimiento</strong> donde la velocidad es primordial, el modelo monolítico modular (Linux) sigue siendo el estándar de la industria.</li>
+                        </ol>
+                    </div>
                 </div>
             </div>
         </section>
 
     </main>
+    
+    <footer style="text-align: center; padding: 2rem; margin-top: 2rem; color: var(--text-muted); border-top: 1px solid var(--border-color);">
+        <p>Unidad N° 3: Estructuras de Sistemas Operativos | Creado por Ing. Ronald Sierra</p>
+        <p>&copy; 2025 - Experiencia Interactiva de Aprendizaje.</p>
+    </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const contentData = {
-                monolitica: {
-                    title: 'Arquitectura Monolítica',
-                    description: 'En un kernel monolítico, todos los servicios esenciales del sistema operativo (planificación de procesos, gestión de memoria, sistema de archivos, control de dispositivos) se ejecutan en un único espacio de direcciones privilegiado (el espacio del kernel). Es un enfoque de "todo en uno", donde el SO completo se compila en un solo programa grande y fuertemente acoplado. Esta integración total y la ejecución en un entorno privilegiado facilitan una interacción directa y sin intermediarios entre los diversos componentes del sistema, lo que contribuye a un rendimiento mejorado y una comunicación más sencilla entre los módulos del kernel.',
-                    diagram: `
-                        <div class="architecture-diagram flex flex-col justify-center items-center rounded-lg">
-                            <div class="w-full h-full bg-blue-100 border-2 border-blue-500 rounded-lg p-4 flex flex-col justify-between">
-                                <div class="text-center font-bold text-blue-800">MODO KERNEL (Espacio de Direcciones Único)</div>
-                                <div class="grid grid-cols-2 gap-2 mt-4 text-sm">
-                                    <div class="bg-blue-200 p-2 rounded text-center">Gestión de Procesos</div>
-                                    <div class="bg-blue-200 p-2 rounded text-center">Gestión de Memoria</div>
-                                    <div class="bg-blue-200 p-2 rounded text-center">Sistema de Archivos</div>
-                                    <div class="bg-blue-200 p-2 rounded text-center">Controladores</div>
-                                </div>
-                                <div class="text-center text-xs mt-4 text-blue-600">Comunicación mediante llamadas directas a funciones</div>
-                            </div>
-                        </div>`,
-                    pros: [
-                        'Rendimiento superior debido a la mínima sobrecarga de comunicación y cambios de contexto.',
-                        'Desarrollo y depuración iniciales simplificados al estar todo en una base de código unificada.',
-                        'Acceso directo y eficiente a los recursos de hardware.',
-                        'Amplio soporte de hardware y baja sobrecarga de recursos.',
-                        'Adecuado para sistemas operativos de propósito general que demandan alto rendimiento.'
-                    ],
-                    cons: [
-                        'Menos seguro; un fallo o vulnerabilidad en cualquier componente puede colapsar todo el sistema.',
-                        'Difícil de mantener y escalar a medida que el sistema crece debido al fuerte acoplamiento.',
-                        'La adición de nuevas características requiere la recompilación y redistribución de todo el kernel, ralentizando el desarrollo.',
-                        'Poca fiabilidad; un fallo en un servicio puede provocar la caída de todo el sistema.',
-                        'Dificultad para escalar a arquitecturas multiprocesador/distribuidas debido a problemas de sincronización.'
-                    ],
-                    examples: 'Linux, UNIX (versiones clásicas), MS-DOS, Solaris, BSD, SunOS, AIX, OpenVMS, HP-UX, TempleOS, z/TPF, XTS-400.'
-                },
-                jerarquica: {
-                    title: 'Arquitectura Jerárquica (en Capas)',
-                    description: 'Esta estructura organiza el sistema operativo en una jerarquía estricta de capas, donde cada capa tiene una tarea específica y bien definida. Generalmente numeradas desde la capa inferior (capa 0, hardware) hasta la capa superior (capa N, interfaz de usuario), una capa solo puede acceder a los servicios proporcionados por las capas directamente debajo de ella. Las solicitudes viajan secuencialmente a través de las capas, y cada capa oculta los detalles de implementación de las capas inferiores a las superiores, promoviendo la abstracción y la modularidad.',
-                    diagram: `
-                       <div class="architecture-diagram flex flex-col justify-around items-center rounded-lg space-y-1">
-                            <div class="w-11/12 bg-gray-100 border border-gray-400 p-2 rounded text-center text-sm">Capa N: Interfaz de Usuario</div>
-                            <div class="w-10/12 bg-green-100 border border-green-400 p-2 rounded text-center text-sm">Capa N-1: Programas de Usuario</div>
-                            <div class="w-9/12 bg-yellow-100 border border-yellow-400 p-2 rounded text-center text-sm">Capa 3: Gestión de E/S y Búfer</div>
-                            <div class="w-8/12 bg-orange-100 border border-orange-400 p-2 rounded text-center text-sm">Capa 2: Comunicación del Operador</div>
-                            <div class="w-7/12 bg-red-100 border border-red-400 p-2 rounded text-center text-sm">Capa 1: Gestión de Memoria</div>
-                            <div class="w-6/12 bg-purple-100 border border-purple-400 p-2 rounded text-center text-sm">Capa 0: Hardware y Planificación CPU</div>
-                       </div>`,
-                    pros: [
-                        'Alta modularidad y clara separación de responsabilidades, facilitando el desarrollo y la comprensión.',
-                        'Depuración y verificación del sistema más sencillas, ya que los errores se pueden aislar por capa.',
-                        'Mantenimiento y actualizaciones más fáciles si las interfaces entre capas no cambian.',
-                        'Abstracción eficaz: cada capa oculta la complejidad interna a las capas superiores.',
-                        'Mejor seguridad de datos y gestión de permisos (especialmente en sistemas de archivos jerárquicos).'
-                    ],
-                    cons: [
-                        'Rendimiento más lento debido a la sobrecarga de atravesar múltiples capas para cada solicitud.',
-                        'La implementación es compleja y requiere una planificación extremadamente cuidadosa en la disposición de las capas.',
-                        'Puede ser ineficiente si las capas superiores necesitan servicios de capas muy inferiores, aumentando la sobrecarga.',
-                        'Rigidez en ciertos contextos (ej. bases de datos jerárquicas) si las relaciones de datos cambian.',
-                        'Alcance limitado para datos que no se ajustan naturalmente a una estructura jerárquica.'
-                    ],
-                    examples: 'THE System, Multics, Windows NT (con influencias en su diseño en capas), OS/2.'
-                },
-                microkernel: {
-                    title: 'Arquitectura Cliente-Servidor (Microkernel)',
-                    description: 'El enfoque de microkernel minimiza la cantidad de código que se ejecuta en modo privilegiado (espacio del kernel). Solo las funciones más básicas y esenciales (gestión básica de procesos, gestión de memoria y, crucialmente, comunicación entre procesos - IPC) residen en el kernel. La mayor parte de la funcionalidad del sistema operativo, incluidos los controladores de dispositivos, los sistemas de archivos y los protocolos de red, se ejecutan como procesos de servidor separados en el espacio de usuario, a los que las aplicaciones cliente acceden a través de IPC (generalmente paso de mensajes).',
-                    diagram: `
-                        <div class="architecture-diagram flex flex-col justify-center items-center rounded-lg">
-                            <div class="w-full text-center font-bold text-green-800 mb-2">MODO USUARIO (Servicios como Procesos)</div>
-                            <div class="w-full grid grid-cols-3 gap-2 text-sm mb-4">
-                               <div class="bg-green-200 p-2 rounded text-center">Servidor de Archivos</div>
-                               <div class="bg-green-200 p-2 rounded text-center">Servidor de Red</div>
-                               <div class="bg-green-200 p-2 rounded text-center">Servidor de Drivers</div>
-                               <div class="bg-green-200 p-2 rounded text-center">Gestión de E/S</div>
-                               <div class="bg-green-200 p-2 rounded text-center">Seguridad</div>
-                               <div class="bg-green-200 p-2 rounded text-center">Planificación Avanzada</div>
-                            </div>
-                            <div class="w-full text-center text-xs text-gray-500">↑ ↓ Comunicación vía IPC (Paso de Mensajes) ↓ ↑</div>
-                            <div class="w-1/2 bg-red-100 border-2 border-red-500 rounded-lg p-4 mt-4 flex flex-col justify-center">
-                               <div class="text-center font-bold text-red-800">MODO KERNEL (Microkernel)</div>
-                               <div class="text-center text-sm mt-2">IPC, Gestión Memoria Básica, Planificación Básica</div>
-                            </div>
-                        </div>`,
-                    pros: [
-                        'Mayor seguridad y fiabilidad; un fallo en un servicio del espacio de usuario no colapsa el kernel central.',
-                        'Alta modularidad y flexibilidad; los servicios se pueden actualizar o reiniciar de forma independiente.',
-                        'El kernel es más pequeño y, por lo tanto, más fácil de verificar formalmente y de depurar.',
-                        'Alta extensibilidad; nuevas características se añaden como nuevos procesos en el espacio de usuario.',
-                        'Mayor portabilidad al aislar la mayoría de los servicios del hardware subyacente.',
-                        'Mantenimiento más sencillo debido al diseño modular.'
-                    ],
-                    cons: [
-                        'Rendimiento potencialmente menor debido a la sobrecarga de la IPC (paso de mensajes) y los cambios de contexto.',
-                        'Diseño más complejo de implementar y mantener debido a la necesidad de gestionar la comunicación entre procesos.',
-                        'Puede consumir más recursos del sistema (memoria y CPU) por los mecanismos de comunicación y sincronización.'
-                    ],
-                    examples: 'QNX, MINIX 3, Mach (base de XNU en macOS/iOS), Symbian.'
-                }
-            };
+    document.addEventListener('DOMContentLoaded', () => {
 
-            const timelineData = [
-                { year: '1940s-1950s', title: 'Primeros Comienzos y Procesamiento por Lotes', description: 'Los ordenadores operaban sin SO formal; los programas se cargaban manualmente. En 1956, GM-NAA I/O introduce el procesamiento por lotes para automatizar trabajos, mejorando la eficiencia de la CPU.' },
-                { year: '1960s', title: 'Multiprogramación y Tiempo Compartido', description: 'La multiprogramación permite múltiples programas en memoria compartiendo la CPU. Sistemas como CTSS (1961) y Multics (1969) introducen el tiempo compartido, permitiendo la interacción simultánea de múltiples usuarios.' },
-                { year: '1971', title: 'UNIX', description: 'Revoluciona el diseño de SO por su simplicidad, portabilidad y capacidad multitarea. Su filosofía de "todo es un archivo" influyó enormemente en sistemas posteriores.' },
-                { year: '1974', title: 'CP/M', description: 'Un SO temprano para microordenadores, que sentó las bases para MS-DOS y el auge de los ordenadores personales.' },
-                { year: '1981', title: 'PC-DOS (MS-DOS)', description: 'El sistema operativo dominante para los IBM PC, caracterizado por su simplicidad monolítica y su interfaz de línea de comandos.' },
-                { year: '1982', title: 'QNX', description: 'Uno de los primeros y más exitosos microkernels comerciales, enfocado en sistemas de tiempo real y aplicaciones de misión crítica.' },
-                { year: '1984', title: 'Apple Macintosh', description: 'Populariza la Interfaz Gráfica de Usuario (GUI) con un enfoque en la facilidad de uso y la experiencia visual.' },
-                { year: '1985', title: 'Windows 1.0', description: 'Microsoft lanza su primera versión de Windows, llevando la GUI al mercado masivo de PC.' },
-                { year: '1991', title: 'Linux', description: 'Nace como un kernel monolítico de código abierto, que se convertiría en un pilar de la computación moderna y los servidores.' },
-                { year: '1993', title: 'Windows NT', description: 'Introduce una arquitectura de kernel híbrido, combinando la velocidad monolítica con la modularidad del microkernel, sentando las bases para las versiones modernas de Windows.' },
-                { year: '2007', title: 'iOS & Android', description: 'El auge de los SO móviles redefine la interacción y da paso a la era de los smartphones y la computación en la nube, con sistemas operativos optimizados para dispositivos táctiles.' },
-                { year: '2000s-Presente', title: 'Virtualización y Cloud Computing', description: 'La virtualización se convierte en una tecnología fundamental, permitiendo la creación de máquinas virtuales y el desarrollo de sistemas operativos y arquitecturas diseñadas para la nube, como los Cloud OS y las aplicaciones cloud-native.' }
-            ];
-
-            const trendsData = [
-                 { title: 'Exokernels', content: 'Un enfoque radical que minimiza la abstracción del kernel, trasladando la gestión de recursos a las aplicaciones. El kernel solo se encarga de la multiplexación segura del hardware, permitiendo a las aplicaciones implementar sus propias optimizaciones. Ofrece un rendimiento potencial extremo a costa de una mayor complejidad para el desarrollador de aplicaciones y el riesgo de "desorden de código".' },
-                 { title: 'Unikernels', content: 'Sistemas operativos altamente especializados y de propósito único, donde las bibliotecas del SO se enlazan directamente con la aplicación para formar una imagen de máquina única y mínima. Eliminan la separación entre espacio de usuario/kernel, ofreciendo una seguridad y un rendimiento superiores para microservicios, IoT, computación sin servidor y dispositivos de borde. Se caracterizan por su tamaño mínimo y tiempos de arranque extremadamente rápidos.' },
-                 { title: 'Sistemas Operativos en la Nube (Cloud OS)', content: 'No son un SO tradicional, sino un entorno que abstrae, agrupa y gestiona recursos escalables a través de la nube. Utilizan la virtualización y la automatización para ofrecer servicios bajo demanda. Las aplicaciones "cloud-native" están diseñadas específicamente para este paradigma, utilizando contenedores y microservicios, y se construyen con prácticas DevOps.' },
-                 { title: 'Impacto de la Inteligencia Artificial', content: 'La IA está transformando la interacción del usuario y la optimización del sistema. Los SOs integran asistentes de voz y capacidades de aprendizaje automático para anticipar necesidades, optimizar el rendimiento de forma proactiva y automatizar tareas complejas, llevando a una experiencia de usuario más inteligente y fluida.' },
-                 { title: 'Virtualización Generalizada', content: 'Tecnología crucial que sustenta gran parte de la computación moderna, especialmente en la nube. Permite que los recursos de hardware de una única máquina física se dividan y asignen a múltiples máquinas virtuales (VMs) independientes, cada una con su propio SO. Los hipervisores gestionan estas VMs, siendo fundamentales para la escalabilidad, flexibilidad y eficiencia de los entornos en la nube y los flujos de trabajo de DevOps.' }
-            ];
-
-            const comparisonTableData = [
-                {
-                    feature: 'Definición',
-                    monolithic: 'Unidad única y autocontenida; todos los servicios en espacio de kernel, espacio de direcciones único.',
-                    layered: 'Servicios divididos en capas distintas; cada capa usa servicios de capas inferiores.',
-                    microkernel: 'Kernel mínimo; servicios esenciales en kernel, otros en espacio de usuario.',
-                    hybrid: 'Combina aspectos de monolítico (rendimiento) y microkernel (modularidad, seguridad).'
-                },
-                {
-                    feature: 'Tamaño del Kernel',
-                    monolithic: 'Grande (millones de líneas de código), aumenta con servicios.',
-                    layered: 'Variable, depende del número y complejidad de las capas.',
-                    microkernel: 'Pequeño (miles de líneas de código, ej. MINIX 3 ~12K).',
-                    hybrid: 'Intermedio, con algunos servicios en espacio de kernel.'
-                },
-                {
-                    feature: 'Rendimiento',
-                    monolithic: 'Alto (menos cambios de contexto, sin sobrecarga IPC).',
-                    layered: 'Lento (sobrecarga por comunicación entre capas).',
-                    microkernel: 'Bajo (mayor sobrecarga IPC, más cambios de contexto).',
-                    hybrid: 'Equilibrado (reduce IPC de microkernel, mantiene modularidad).'
-                },
-                {
-                    feature: 'Seguridad',
-                    monolithic: 'Baja (gran superficie de ataque, un fallo compromete todo el sistema).',
-                    layered: 'Mejorada (abstracción, aislamiento de fallos en capas).',
-                    microkernel: 'Alta (servicios aislados en espacio de usuario, menor superficie de ataque, alta tolerancia a fallos).',
-                    hybrid: 'Media (mayor superficie de ataque que microkernel puro, pero mejor que monolítico).'
-                },
-                {
-                    feature: 'Modularidad',
-                    monolithic: 'Baja (componentes fuertemente acoplados).',
-                    layered: 'Alta (cada capa con función específica).',
-                    microkernel: 'Muy alta (servicios independientes en espacio de usuario).',
-                    hybrid: 'Media-Alta (permite cargar/descargar componentes dinámicamente).'
-                },
-                {
-                    feature: 'Flexibilidad',
-                    monolithic: 'Baja (difícil de modificar o extender).',
-                    layered: 'Media (modificaciones en una capa no afectan otras).',
-                    microkernel: 'Alta (fácilmente extensible con nuevos servicios).',
-                    hybrid: 'Alta (equilibrio entre monolítico y microkernel).'
-                },
-                {
-                    feature: 'Complejidad de Desarrollo',
-                    monolithic: 'Simple al inicio, pero compleja para grandes aplicaciones.',
-                    layered: 'Compleja y requiere planificación cuidadosa.',
-                    microkernel: 'Alta (manejo de IPC, comprensión de internos).',
-                    hybrid: 'Muy alta (combina complejidades de ambos).'
-                },
-                {
-                    feature: 'Mantenibilidad',
-                    monolithic: 'Baja (cambios requieren rediseño o recompilación completa).',
-                    layered: 'Alta (fácil depuración y actualización por capas).',
-                    microkernel: 'Alta (componentes actualizables independientemente).',
-                    hybrid: 'Media-Baja (diseño complejo dificulta el mantenimiento).'
-                },
-                {
-                    feature: 'Ejemplos Reales',
-                    monolithic: 'Linux, UNIX, MS-DOS, Solaris.',
-                    layered: 'THE System, Multics (influencial), UNIX/Linux (internamente).',
-                    microkernel: 'Mach, MINIX, QNX, Symbian.',
-                    hybrid: 'Windows NT, macOS (XNU).'
-                }
-            ];
-
-
-            const tabs = document.querySelectorAll('.tab');
-            const tabContentContainer = document.getElementById('tab-content');
-            
-            function updateTabContent(tabId) {
-                const data = contentData[tabId];
-                if (!data) return;
-
-                tabContentContainer.innerHTML = `
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                        <div>
-                            <h3 class="text-2xl font-bold mb-4 text-[#2c3e50]">${data.title}</h3>
-                            <p class="text-gray-600 mb-6">${data.description}</p>
-                            
-                            <div class="space-y-2">
-                                <div class="accordion-item">
-                                    <button class="accordion-header w-full text-left font-semibold p-3 bg-green-100 text-green-800 rounded-md hover:bg-green-200 transition-colors flex justify-between items-center">
-                                        <span>Ventajas</span>
-                                        <span class="transform transition-transform duration-300">▼</span>
-                                    </button>
-                                    <div class="accordion-content">
-                                        <ul class="list-disc list-inside p-4 text-gray-600 bg-gray-50 rounded-b-md">
-                                            ${data.pros.map(pro => `<li>${pro}</li>`).join('')}
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="accordion-item">
-                                    <button class="accordion-header w-full text-left font-semibold p-3 bg-red-100 text-red-800 rounded-md hover:bg-red-200 transition-colors flex justify-between items-center">
-                                        <span>Desventajas</span>
-                                        <span class="transform transition-transform duration-300">▼</span>
-                                    </button>
-                                    <div class="accordion-content">
-                                        <ul class="list-disc list-inside p-4 text-gray-600 bg-gray-50 rounded-b-md">
-                                            ${data.cons.map(con => `<li>${con}</li>`).join('')}
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-
-                             <div class="mt-6">
-                                <h4 class="font-bold text-gray-700">Ejemplos:</h4>
-                                <p class="text-gray-600 text-sm">${data.examples}</p>
-                            </div>
-                        </div>
-                        <div>
-                            ${data.diagram}
-                        </div>
-                    </div>
-                `;
-                setupAccordions();
-            }
-
-            function setupAccordions() {
-                 document.querySelectorAll('.accordion-header').forEach(button => {
-                    button.addEventListener('click', () => {
-                        const content = button.nextElementSibling;
-                        const icon = button.querySelector('span:last-child');
-                        
-                        button.parentElement.parentElement.querySelectorAll('.accordion-content').forEach(item => {
-                            if (item !== content) {
-                                item.style.maxHeight = '0';
-                                item.previousElementSibling.querySelector('span:last-child').style.transform = 'rotate(0deg)';
-                            }
-                        });
-                        
-                        if (content.style.maxHeight && content.style.maxHeight !== '0px') {
-                            content.style.maxHeight = '0';
-                            icon.style.transform = 'rotate(0deg)';
-                        } else {
-                            content.style.maxHeight = content.scrollHeight + 'px';
-                            icon.style.transform = 'rotate(180deg)';
-                        }
-                    });
-                });
-            }
-
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    updateTabContent(tab.dataset.tab);
-                });
-            });
-
-            tabs[0].click();
-
-            const chartCtx = document.getElementById('comparisonChart').getContext('2d');
-            const comparisonData = {
-                labels: ['Rendimiento', 'Seguridad', 'Modularidad', 'Fiabilidad', 'Complejidad Dev.', 'Mantenibilidad'],
-                datasets: [
-                    {
-                        label: 'Monolítica',
-                        data: [9, 3, 2, 4, 3, 2],
-                        backgroundColor: 'rgba(239, 68, 68, 0.2)',
-                        borderColor: 'rgba(239, 68, 68, 1)',
-                        pointBackgroundColor: 'rgba(239, 68, 68, 1)',
-                    },
-                    {
-                        label: 'Jerárquica',
-                        data: [5, 6, 7, 6, 6, 8],
-                        backgroundColor: 'rgba(245, 158, 11, 0.2)',
-                        borderColor: 'rgba(245, 158, 11, 1)',
-                        pointBackgroundColor: 'rgba(245, 158, 11, 1)',
-                    },
-                    {
-                        label: 'Microkernel',
-                        data: [4, 9, 9, 9, 8, 9],
-                        backgroundColor: 'rgba(30, 136, 229, 0.2)',
-                        borderColor: 'rgba(30, 136, 229, 1)',
-                        pointBackgroundColor: 'rgba(30, 136, 229, 1)',
-                    }
-                ]
-            };
-            new Chart(chartCtx, {
-                type: 'radar',
-                data: comparisonData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed.r !== null) {
-                                        label += context.parsed.r + ' / 10';
-                                    }
-                                    return label;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        r: {
-                            angleLines: {
-                                display: true,
-                                color: 'rgba(0, 0, 0, 0.1)'
-                            },
-                            suggestedMin: 0,
-                            suggestedMax: 10,
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.1)'
-                            },
-                            pointLabels: {
-                                font: {
-                                    size: 12,
-                                    weight: 'bold'
-                                }
-                            },
-                            ticks: {
-                                backdropColor: 'rgba(255, 255, 255, 0.75)',
-                                stepSize: 2
-                            }
-                        }
-                    }
+        // --- Navegación por Scroll ---
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.page-section');
+        const onScroll = () => {
+            let current = 'inicio';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (window.pageYOffset >= sectionTop - 150) {
+                    current = section.getAttribute('id');
                 }
             });
-
-            const comparisonTableBody = document.getElementById('comparisonTableBody');
-            comparisonTableData.forEach(rowData => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="font-semibold text-[#2c3e50]">${rowData.feature}</td>
-                    <td>${rowData.monolithic}</td>
-                    <td>${rowData.layered}</td>
-                    <td>${rowData.microkernel}</td>
-                    <td>${rowData.hybrid}</td>
-                `;
-                comparisonTableBody.appendChild(row);
-            });
-
-
-            const timelineContainer = document.getElementById('timeline-container');
-            timelineContainer.innerHTML = `<div class="absolute h-full border-l-2 border-gray-300" style="left: 1.25rem;"></div>` + timelineData.map((item, index) => `
-                <div class="timeline-item mb-8 pl-12 relative">
-                    <div class="absolute w-5 h-5 bg-white border-2 border-[#1E88E5] rounded-full" style="left: 0.625rem; top: 0;"></div>
-                    <button class="timeline-header text-left">
-                        <p class="font-bold text-lg text-[#1E88E5]">${item.year}: ${item.title}</p>
-                    </button>
-                    <div class="timeline-item-content">
-                        <p class="text-gray-600 mt-2">${item.description}</p>
-                    </div>
-                </div>
-            `).join('');
-
-            document.querySelectorAll('.timeline-header').forEach(header => {
-                header.addEventListener('click', () => {
-                    const item = header.parentElement;
-                    const content = header.nextElementSibling;
-                    const isActive = item.classList.contains('active');
-
-                    document.querySelectorAll('.timeline-item.active').forEach(activeItem => {
-                        if (activeItem !== item) {
-                            activeItem.classList.remove('active');
-                            const activeContent = activeItem.querySelector('.timeline-item-content');
-                            activeContent.style.maxHeight = '0';
-                            activeContent.style.paddingTop = '0';
-                            activeContent.style.paddingBottom = '0';
-                        }
-                    });
-
-                    item.classList.toggle('active', !isActive);
-                    if (!isActive) {
-                        content.style.maxHeight = content.scrollHeight + 'px';
-                        content.style.paddingTop = '0.5rem';
-                        content.style.paddingBottom = '0.5rem';
-                    } else {
-                        content.style.maxHeight = '0';
-                        content.style.paddingTop = '0';
-                        content.style.paddingBottom = '0';
-                    }
-                });
-            });
-
-
-            const trendsAccordion = document.getElementById('trends-accordion');
-            trendsAccordion.innerHTML = trendsData.map(trend => `
-                <div class="accordion-item bg-white rounded-lg shadow">
-                    <button class="accordion-header w-full text-left font-semibold p-4 flex justify-between items-center">
-                        <span>${trend.title}</span>
-                        <span class="transform transition-transform duration-300">▼</span>
-                    </button>
-                    <div class="accordion-content">
-                        <p class="p-4 pt-0 text-gray-600">${trend.content}</p>
-                    </div>
-                </div>
-            `).join('');
-            setupAccordions();
-
-
-            const navLinks = document.querySelectorAll('.nav-link');
-            const pageSections = document.querySelectorAll('.page-section');
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-            
-            function onScroll() {
-                let currentSection = '';
-                pageSections.forEach(section => {
-                    const sectionTop = section.offsetTop;
-                    if (window.scrollY >= sectionTop - 100) {
-                        currentSection = section.getAttribute('id');
-                    }
-                });
-
-                navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href').substring(1) === currentSection) {
-                        link.classList.add('active');
-                    }
-                });
-            }
-
             navLinks.forEach(link => {
-                link.addEventListener('click', e => {
-                    e.preventDefault();
-                    document.querySelector(link.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                    if (mobileMenu.classList.contains('hidden') === false) {
-                        mobileMenu.classList.add('hidden');
-                    }
-                });
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
             });
+        };
+        window.addEventListener('scroll', onScroll);
+        onScroll(); // Initial check
 
-            window.addEventListener('scroll', onScroll);
-            onScroll();
+        // --- Lógica de Pestañas (Tabs) ---
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(button.dataset.tab).classList.add('active');
+            });
         });
+        
+        // --- Lógica de Acordeones ---
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                }
+            });
+        });
+
+        // --- Lógica de Línea de Tiempo ---
+        const timelineItems = document.querySelectorAll('.timeline-item');
+        timelineItems.forEach(item => {
+            const header = item.querySelector('.timeline-header');
+            const content = item.querySelector('.timeline-content');
+            header.addEventListener('click', () => {
+                item.classList.toggle('active');
+                 if (item.classList.contains('active')) {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                } else {
+                    content.style.maxHeight = null;
+                }
+            });
+        });
+
+        // --- Lógica del Gráfico de Radar (Chart.js) ---
+        const radarCtx = document.getElementById('comparisonRadarChart').getContext('2d');
+        const analysisTitle = document.getElementById('analysis-title');
+        const analysisText = document.getElementById('analysis-text');
+
+        const radarData = {
+            labels: ['Rendimiento', 'Fiabilidad', 'Seguridad', 'Modularidad', 'Mantenibilidad', 'Flexibilidad'],
+            datasets: [
+                {
+                    label: 'Monolítica',
+                    data: [5, 1, 1, 2, 1, 2],
+                    borderColor: 'rgba(239, 68, 68, 1)',
+                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                    pointBackgroundColor: 'rgba(239, 68, 68, 1)',
+                },
+                {
+                    label: 'Jerárquica',
+                    data: [2, 3, 3, 4, 4, 3],
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                    pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                },
+                {
+                    label: 'Cliente-Servidor',
+                    data: [3, 5, 5, 5, 5, 5],
+                    borderColor: 'rgba(34, 197, 94, 1)',
+                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                    pointBackgroundColor: 'rgba(34, 197, 94, 1)',
+                }
+            ]
+        };
+
+        const analysisContent = {
+            Rendimiento: "El modelo monolítico es el claro ganador. La ausencia de fronteras internas permite una comunicación sin sobrecargas, mientras que los microkernels pagan un precio en latencia por cada servicio solicitado debido a la comunicación entre procesos (IPC).",
+            Fiabilidad: "El microkernel es el líder indiscutible. La capacidad de aislar un fallo en un servidor (como un driver) y reiniciarlo sin afectar al resto del sistema es una ventaja monumental para sistemas que deben funcionar ininterrumpidamente.",
+            Seguridad: "Siguiendo la lógica de la fiabilidad, el microkernel ofrece una superficie de ataque mucho menor en modo privilegiado. Comprometer un servidor no es lo mismo que comprometer el kernel completo. El principio de 'mínimo privilegio' es clave.",
+            Modularidad: "Tanto la estructura jerárquica como la de cliente-servidor fueron diseñadas para mejorar la modularidad. Dividir el problema en partes más pequeñas y bien definidas (capas o servidores) es una estrategia probada para gestionar la complejidad.",
+            Mantenibilidad: "Las arquitecturas por capas y cliente-servidor facilitan la depuración y modificación aislada de sus componentes. El modelo monolítico, incluso con módulos, sigue siendo un desafío por su código masivo y acoplado.",
+            Flexibilidad: "El modelo cliente-servidor es el más flexible, permitiendo añadir, eliminar o actualizar servicios dinámicamente sin reiniciar el kernel. El modelo monolítico es más rígido, aunque los módulos le otorgan cierta flexibilidad."
+        };
+
+        new Chart(radarCtx, {
+            type: 'radar',
+            data: radarData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(255, 255, 255, 0.2)' },
+                        grid: { color: 'rgba(255, 255, 255, 0.2)' },
+                        pointLabels: {
+                            font: { size: 14, weight: 'bold' },
+                            color: '#f3f4f6' // var(--text-light)
+                        },
+                        ticks: {
+                            display: false, beginAtZero: true, max: 5, stepSize: 1,
+                            backdropColor: 'transparent'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { font: { size: 14 }, color: '#f3f4f6' }
+                    },
+                    tooltip: { enabled: true }
+                },
+                onHover: (event, chartElement) => {
+                   if(chartElement.length > 0) {
+                       const index = chartElement[0].index;
+                       const label = radarData.labels[index];
+                       if(analysisContent[label]){
+                           analysisTitle.innerText = `Análisis de: ${label}`;
+                           analysisText.innerText = analysisContent[label];
+                       }
+                   } else {
+                       analysisTitle.innerText = `Análisis Detallado`;
+                       analysisText.innerText = `Pase el cursor sobre un criterio en el gráfico para ver los detalles aquí.`;
+                   }
+                }
+            }
+        });
+    });
     </script>
 </body>
 </html>
