@@ -1,0 +1,1804 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquitecturas de Sistemas Operativos</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), #1a2530);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            border-radius: 15px 15px 0 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .navbar {
+            background-color: var(--primary);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            margin: 0 10px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .content-section {
+            background-color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #eee;
+        }
+
+        .section-header h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-left: 10px;
+        }
+
+        .section-icon {
+            font-size: 2rem;
+            color: var(--secondary);
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-header i {
+            margin-right: 10px;
+            color: var(--secondary);
+        }
+
+        .card-body {
+            padding: 1rem 0;
+        }
+
+        .btn {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+        }
+
+        .btn-success:hover {
+            background-color: #219a52;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+        }
+
+        .btn-warning:hover {
+            background-color: #d68910;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn i {
+            margin-right: 5px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .feature i {
+            font-size: 3rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        .feature h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .chart-container {
+            height: 400px;
+            margin: 2rem 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .comparison-table th {
+            background-color: var(--primary);
+            color: white;
+            text-align: left;
+            padding: 1rem;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .comparison-table tr:hover {
+            background-color: #e3f2fd;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 5px;
+        }
+
+        .badge-primary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .badge-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .badge-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .badge-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 2rem auto;
+        }
+
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: #e0e0e0;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+        }
+
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            width: 50%;
+            box-sizing: border-box;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            right: -17px;
+            background-color: white;
+            border: 4px solid var(--secondary);
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .timeline-item:nth-child(odd) {
+            left: 0;
+        }
+
+        .timeline-item:nth-child(even) {
+            left: 50%;
+        }
+
+        .timeline-item:nth-child(odd)::after {
+            content: '';
+            left: -16px;
+        }
+
+        .timeline-content {
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-content h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .timeline-content .date {
+            color: var(--secondary);
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .diagram-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            margin: 2rem 0;
+            padding: 2rem;
+        }
+
+        .monolithic-diagram {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .kernel-space {
+            grid-column: 1 / 4;
+            grid-row: 1 / 2;
+            background-color: #3498db;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .module {
+            background-color: #95a5a6;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .microkernel-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .microkernel-core {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            width: 80%;
+            margin-bottom: 20px;
+        }
+
+        .microkernel-services {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+        }
+
+        .service {
+            background-color: #27ae60;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .layered-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .layer {
+            width: 80%;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            margin: 10px 0;
+            color: white;
+        }
+
+        .layer-1 {
+            background-color: #8e44ad;
+        }
+
+        .layer-2 {
+            background-color: #3498db;
+        }
+
+        .layer-3 {
+            background-color: #27ae60;
+        }
+
+        .layer-4 {
+            background-color: #f39c12;
+        }
+
+        .layer-5 {
+            background-color: #e74c3c;
+        }
+
+        .hierarchical-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .root {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            width: 60%;
+            margin-bottom: 20px;
+        }
+
+        .folder-structure {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .folder {
+            background-color: #f1c40f;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 5px 0;
+            width: 80%;
+            font-weight: 500;
+        }
+
+        .file {
+            background-color: #3498db;
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            margin: 3px 0;
+            width: 60%;
+            font-size: 0.9rem;
+        }
+
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--secondary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .scroll-to-top:hover {
+            background-color: #2980b9;
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 768px) {
+            .timeline::after {
+                left: 31px;
+            }
+
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+
+            .timeline-item:nth-child(even) {
+                left: 0;
+            }
+
+            .timeline-item::after {
+                left: 15px;
+                right: auto;
+            }
+
+            .comparison-table {
+                font-size: 0.9rem;
+            }
+
+            .comparison-table th, .comparison-table td {
+                padding: 8px 5px;
+            }
+
+            .nav-container {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding: 5px 0;
+            }
+
+            .nav-item {
+                margin: 5px;
+            }
+        }
+
+        .highlight {
+            background-color: #fffacd;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .metric-label {
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        .metric-value {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 5px;
+            background-color: var(--secondary);
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            border-bottom-color: var(--secondary);
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        footer {
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-radius: 0 0 15px 15px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 300px;
+            margin: 1rem 0;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin: 0.5rem 0;
+        }
+
+        .footer-section a {
+            color: #ddd;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: var(--secondary);
+        }
+
+        .search-container {
+            display: flex;
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 25px 0 0 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--secondary);
+        }
+
+        .search-btn {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 0 25px 25px 0;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Arquitecturas de Sistemas Operativos</h1>
+            <p>Un análisis completo de las arquitecturas monolíticas, jerárquicas y cliente-servidor</p>
+        </header>
+
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-item">
+                    <button class="nav-link active" data-section="introduccion">
+                        <i class="fas fa-home"></i> Introducción
+                    </button>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-link" data-section="monolitica">
+                        <i class="fas fa-cube"></i> Monolítica
+                    </button>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-link" data-section="jerarquica">
+                        <i class="fas fa-sitemap"></i> Jerárquica
+                    </button>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-link" data-section="cliente-servidor">
+                        <i class="fas fa-server"></i> Cliente-Servidor
+                    </button>
+                </div>
+                <div class="nav-item">
+                    <button class="nav-link" data-section="comparacion">
+                        <i class="fas fa-chart-bar"></i> Comparación
+                    </button>
+                </div>
+                <!--<div class="nav-item">
+                    <button class="nav-link" data-section="recursos">
+                        <i class="fas fa-book"></i> Recursos
+                    </button>
+                </div>-->
+            </div>
+        </nav>
+
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Buscar en el contenido...">
+            <button class="search-btn">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+
+        <section id="introduccion" class="content-section active">
+            <div class="section-header">
+                <i class="section-icon fas fa-home"></i>
+                <h2>Introducción</h2>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-info-circle"></i>
+                    <h3>Complejidad de los Sistemas Operativos</h3>
+                </div>
+                <div class="card-body">
+                    <p>La complejidad inherente a la tarea de diseñar un sistema operativo es monumental. Un SO debe gestionar de forma concurrente y eficiente procesos, memoria, dispositivos de entrada/salida, sistemas de archivos y redes, todo ello mientras garantiza la seguridad, la robustez y la equidad en la asignación de recursos.</p>
+                    <p>El diseño y la implementación de un sistema tan complejo no pueden abordarse de manera ad-hoc. La necesidad de una estructura interna coherente y bien definida es, por tanto, no solo una cuestión de elegancia en la ingeniería de software, sino una necesidad imperativa para la viabilidad del sistema.</p>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="feature">
+                    <i class="fas fa-microchip"></i>
+                    <h3>Gestión de Procesos</h3>
+                    <p>Planificación y control de la ejecución de programas, asegurando que los recursos del sistema se utilicen de manera eficiente.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-memory"></i>
+                    <h3>Gestión de Memoria</h3>
+                    <p>Asignación y liberación de espacio de memoria para procesos, optimizando el uso de la memoria principal.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-hdd"></i>
+                    <h3>Gestión de Archivos</h3>
+                    <p>Organización y control del almacenamiento de información en dispositivos persistentes, proporcionando una interfaz lógica al usuario.</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-network-wired"></i>
+                    <h3>Gestión de Dispositivos</h3>
+                    <p>Control y coordinación de los dispositivos de entrada/salida, ocultando su complejidad a las aplicaciones.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-history"></i>
+                    <h3>Evolución Histórica</h3>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <span class="date">1971</span>
+                                <h3>Unix</h3>
+                                <p>Desarrollado en 1971, Unix revolucionó el diseño de los sistemas operativos por su simplicidad, portabilidad y capacidad multitarea. Su diseño modular y su filosofía de "todo es un archivo" lo hicieron extremadamente influyente.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <span class="date">1974</span>
+                                <h3>CP/M</h3>
+                                <p>Uno de los primeros sistemas operativos para ordenadores personales, sentó las bases para el desarrollo de sistemas más accesibles.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <span class="date">1981</span>
+                                <h3>PC-DOS</h3>
+                                <p>Desarrollado por IBM, marcó el comienzo de la era de los ordenadores personales y popularizó los sistemas operativos monolíticos.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <span class="date">1990s</span>
+                                <h3>Microkernel</h3>
+                                <p>Emergencia de arquitecturas basadas en microkernel que priorizan la modularidad y la seguridad sobre el rendimiento bruto.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <span class="date">2000s</span>
+                                <h3>Unikernels</h3>
+                                <p>Una especialización para la computación en la nube. Un unikernel es un sistema operativo mínimo y de propósito único creado al compilar solo el código de la biblioteca del sistema operativo necesario para que una aplicación específica se ejecute directamente en un hipervisor.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="monolitica" class="content-section">
+            <div class="section-header">
+                <i class="section-icon fas fa-cube"></i>
+                <h2>Arquitectura Monolítica</h2>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-info-circle"></i>
+                    <h3>Definición y Principios</h3>
+                </div>
+                <div class="card-body">
+                    <p>La arquitectura monolítica representa uno de los enfoques más tradicionales y fundamentales en el diseño de sistemas operativos. En su esencia, un kernel monolítico es una unidad única y autocontenida que encapsula todos los servicios esenciales del sistema operativo.</p>
+                    <p>Esto incluye funciones críticas como la planificación de procesos, la gestión de la memoria, la gestión del sistema de archivos y el control de dispositivos. En resumen, el diseño monolítico es un enfoque donde el sistema operativo completo se concibe como un programa grande y unificado.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-diagram-project"></i>
+                    <h3>Diagrama de Arquitectura</h3>
+                </div>
+                <div class="card-body">
+                    <div class="diagram-container">
+                        <div class="monolithic-diagram">
+                            <div class="kernel-space">Espacio del Kernel</div>
+                            <div class="module">Planificación de Procesos</div>
+                            <div class="module">Gestión de Memoria</div>
+                            <div class="module">Sistema de Archivos</div>
+                            <div class="module">Controladores de Dispositivos</div>
+                            <div class="module">Redes</div>
+                            <div class="module">IPC (Comunicación entre Procesos)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Beneficios</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul style="list-style-type: none; padding-left: 0;">
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>Alto rendimiento debido a la falta de sobrecarga de comunicación entre procesos</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>Comunicación directa y eficiente entre módulos del kernel</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>Ejecutable único que simplifica la distribución e instalación</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>Menor latencia en llamadas al sistema</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Desventajas</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul style="list-style-type: none; padding-left: 0;">
+                            <li style="margin-bottom: 10px;"><i class="fas fa-times" style="color: var(--danger); margin-right: 10px;"></i>Dificultad extrema de mantenimiento y depuración</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-times" style="color: var(--danger); margin-right: 10px;"></i>Falta de modularidad, lo que dificulta las actualizaciones</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-times" style="color: var(--danger); margin-right: 10px;"></i>Un error en un componente puede hacer que todo el sistema falle</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-times" style="color: var(--danger); margin-right: 10px;"></i>Mayor superficie de ataque para vulnerabilidades de seguridad</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-flask"></i>
+                    <h3>Ejemplos y Casos de Estudio</h3>
+                </div>
+                <div class="card-body">
+                    <div class="metric">
+                        <span class="metric-label">MS-DOS</span>
+                        <span class="metric-value">Ejemplo puro de arquitectura monolítica</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 95%;"></div>
+                    </div>
+                    <p style="margin-top: 10px;">MS-DOS era esencialmente un conjunto de rutinas residentes en memoria que proporcionaban servicios de E/S y gestión de archivos. No tenía una distinción real entre modo usuario y modo kernel, y cualquier programa podía acceder directamente al hardware, lo que lo hacía extremadamente simple pero también completamente inseguro.</p>
+
+                    <div class="metric">
+                        <span class="metric-label">Linux (Kernel)</span>
+                        <span class="metric-value">Arquitectura híbrida con base monolítica</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 85%;"></div>
+                    </div>
+                    <p style="margin-top: 10px;">Aunque el kernel de Linux es principalmente monolítico, permite la carga dinámica de módulos, lo que proporciona cierto grado de modularidad sin sacrificar el rendimiento.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="jerarquica" class="content-section">
+            <div class="section-header">
+                <i class="section-icon fas fa-sitemap"></i>
+                <h2>Arquitectura Jerárquica</h2>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-info-circle"></i>
+                    <h3>Definición y Principios</h3>
+                </div>
+                <div class="card-body">
+                    <p>La arquitectura jerárquica (o en capas) organiza el sistema operativo en una serie de niveles o capas, donde cada capa proporciona servicios a la capa superior y utiliza los servicios de la capa inferior. Este enfoque promueve la abstracción y la modularidad en el diseño del sistema.</p>
+                    <p>El concepto de jerarquía se extiende más allá de la estructura general del sistema operativo y se manifiesta prominentemente en componentes clave como los sistemas de archivos y las bases de datos.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-diagram-project"></i>
+                    <h3>Diagrama de Arquitectura</h3>
+                </div>
+                <div class="card-body">
+                    <div class="diagram-container">
+                        <div class="layered-diagram">
+                            <div class="layer layer-5">Aplicaciones del Usuario</div>
+                            <div class="layer layer-4">Interfaz de Usuario</div>
+                            <div class="layer layer-3">Servicios del Sistema</div>
+                            <div class="layer layer-2">Gestión de Recursos</div>
+                            <div class="layer layer-1">Hardware</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Beneficios</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul style="list-style-type: none; padding-left: 0;">
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>Alta modularidad y facilidad de mantenimiento</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>Abstracción eficaz que oculta la complejidad</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>Fácil actualización de componentes sin afectar al sistema completo</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>Mejor seguridad y fiabilidad gracias a la separación de responsabilidades</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Desventajas</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul style="list-style-type: none; padding-left: 0;">
+                            <li style="margin-bottom: 10px;"><i class="fas fa-times" style="color: var(--danger); margin-right: 10px;"></i>Mayor complejidad en el diseño inicial</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-times" style="color: var(--danger); margin-right: 10px;"></i>Potencial sobrecarga de rendimiento debido a las llamadas entre capas</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-times" style="color: var(--danger); margin-right: 10px;"></i>Dificultad para definir límites claros entre capas</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-times" style="color: var(--danger); margin-right: 10px;"></i>Riesgo de acoplamiento excesivo entre capas adyacentes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-folder-tree"></i>
+                    <h3>Sistemas de Archivos Jerárquicos</h3>
+                </div>
+                <div class="card-body">
+                    <p>Un sistema de archivos jerárquico es la forma estándar de organizar y almacenar archivos y directorios en un ordenador, utilizando una estructura similar a un árbol. Se basa en relaciones padre-hijo, donde cada directorio puede contener subdirectorios y archivos.</p>
+                    
+                    <div class="diagram-container">
+                        <div class="hierarchical-diagram">
+                            <div class="root">Directorio Raíz (/)</div>
+                            <div class="folder-structure">
+                                <div class="folder">home</div>
+                                <div class="folder">usr</div>
+                                <div class="folder">var</div>
+                                <div class="folder">etc</div>
+                                <div class="file">config.txt</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tabs">
+                        <div class="tab active" data-tab="beneficios">Beneficios</div>
+                        <div class="tab" data-tab="desventajas">Desventajas</div>
+                        <div class="tab" data-tab="ejemplos">Ejemplos</div>
+                    </div>
+
+                    <div class="tab-content active" id="tab-beneficios">
+                        <ul style="list-style-type: none; padding-left: 0;">
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>Organización eficiente y fácil acceso a los archivos</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>Permite crear un entorno estructurado, simplificando la gestión y localización de datos</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>Mejor seguridad de los datos y gestión de permisos</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>Restringe el acceso a directorios específicos para usuarios no autorizados</li>
+                        </ul>
+                    </div>
+
+                    <div class="tab-content" id="tab-desventajas">
+                        <ul style="list-style-type: none; padding-left: 0;">
+                            <li style="margin-bottom: 10px;"><i class="fas fa-times" style="color: var(--danger); margin-right: 10px;"></i>Complejidad en la navegación para usuarios principiantes</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-times" style="color: var(--danger); margin-right: 10px;"></i>Riesgo de estructuras profundas que dificultan el acceso</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-times" style="color: var(--danger); margin-right: 10px;"></i>Posible redundancia de archivos en diferentes ubicaciones</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-times" style="color: var(--danger); margin-right: 10px;"></i>Fragmentación de archivos que puede afectar al rendimiento</li>
+                        </ul>
+                    </div>
+
+                    <div class="tab-content" id="tab-ejemplos">
+                        <ul style="list-style-type: none; padding-left: 0;">
+                            <li style="margin-bottom: 10px;"><i class="fas fa-database" style="color: var(--primary); margin-right: 10px;"></i><strong>Registro de Windows:</strong> Utiliza una estructura jerárquica para almacenar la configuración del sistema.</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-file-code" style="color: var(--primary); margin-right: 10px;"></i><strong>Archivos XML:</strong> Representan datos en un formato de árbol jerárquico.</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-folder" style="color: var(--primary); margin-right: 10px;"></i><strong>Sistemas Unix/Linux:</strong> Utilizan una estructura de directorios jerárquica estándar.</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-tape" style="color: var(--primary); margin-right: 10px;"></i><strong>Mainframes:</strong> Sistemas de almacenamiento en cinta utilizados en la década de 1970.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cliente-servidor" class="content-section">
+            <div class="section-header">
+                <i class="section-icon fas fa-server"></i>
+                <h2>Arquitectura Cliente-Servidor (Microkernel)</h2>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-info-circle"></i>
+                    <h3>Definición y Principios</h3>
+                </div>
+                <div class="card-body">
+                    <p>La arquitectura cliente-servidor, también conocida como microkernel, representa un enfoque radicalmente diferente al diseño de sistemas operativos. En lugar de incluir todos los servicios en el kernel, esta arquitectura minimiza el núcleo del sistema operativo a solo las funciones más esenciales.</p>
+                    <p>El microkernel proporciona solo las primitivas básicas necesarias para el funcionamiento del sistema:</p>
+                    <ul style="margin: 15px 0; padding-left: 20px;">
+                        <li style="margin-bottom: 10px;"><strong>Gestión de Procesos:</strong> Creación, destrucción y planificación básica de procesos.</li>
+                        <li style="margin-bottom: 10px;"><strong>Gestión de Hilos:</strong> Primitivas para crear, gestionar y planificar hilos, las unidades básicas de ejecución.</li>
+                        <li style="margin-bottom: 10px;"><strong>Comunicación entre Procesos (IPC):</strong> Un mecanismo robusto y eficiente para que los procesos (clientes y servidores) puedan intercambiar mensajes entre sí.</li>
+                    </ul>
+                    <p>Todo lo demás —gestión del sistema de archivos, controladores de dispositivos, pilas de protocolos de red, gestión de ventanas— se implementa como procesos de servidor que se ejecutan en modo usuario, al igual que las aplicaciones normales.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-diagram-project"></i>
+                    <h3>Diagrama de Arquitectura</h3>
+                </div>
+                <div class="card-body">
+                    <div class="diagram-container">
+                        <div class="microkernel-diagram">
+                            <div class="microkernel-core">Microkernel (Mínimo)</div>
+                            <div class="microkernel-services">
+                                <div class="service">Servidor de Archivos</div>
+                                <div class="service">Servidor de Dispositivos</div>
+                                <div class="service">Servidor de Red</div>
+                                <div class="service">Servidor de Ventanas</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Beneficios</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul style="list-style-type: none; padding-left: 0;">
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>Alta modularidad y extensibilidad</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>Mayor seguridad y estabilidad (fallos aislados)</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>Facilidad de mantenimiento y actualización</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>Portabilidad mejorada entre diferentes plataformas</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Desventajas</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul style="list-style-type: none; padding-left: 0;">
+                            <li style="margin-bottom: 10px;"><i class="fas fa-times" style="color: var(--danger); margin-right: 10px;"></i>Mayor sobrecarga de rendimiento debido a la IPC</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-times" style="color: var(--danger); margin-right: 10px;"></i>Complejidad en el diseño y desarrollo</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-times" style="color: var(--danger); margin-right: 10px;"></i>Dificultad para optimizar el rendimiento</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-times" style="color: var(--danger); margin-right: 10px;"></i>Mayor latencia en las operaciones del sistema</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-sync-alt"></i>
+                    <h3>Flujo de Comunicación Cliente-Servidor</h3>
+                </div>
+                <div class="card-body">
+                    <ol style="padding-left: 20px;">
+                        <li style="margin-bottom: 15px;"><strong>Solicitud del Cliente:</strong> Una aplicación cliente (por ejemplo, un editor de texto) quiere guardar un archivo. Para ello, construye un mensaje que contiene la solicitud ("escribir datos en el archivo X") y los datos a escribir.</li>
+                        <li style="margin-bottom: 15px;"><strong>Llamada al Microkernel (IPC):</strong> El cliente realiza una llamada al microkernel (una de las pocas llamadas al sistema disponibles) para enviar el mensaje al servidor del sistema de archivos.</li>
+                        <li style="margin-bottom: 15px;"><strong>Recepción por el Microkernel:</strong> El microkernel recibe el mensaje, verifica los permisos del cliente y lo enruta al servidor del sistema de archivos adecuado.</li>
+                        <li style="margin-bottom: 15px;"><strong>Procesamiento por el Servidor:</strong> El servidor del sistema de archivos recibe el mensaje, accede al disco duro (a través de otro servidor de dispositivos, si es necesario), escribe los datos y actualiza las estructuras del sistema de archivos.</li>
+                        <li style="margin-bottom: 15px;"><strong>Respuesta del Servidor:</strong> Una vez completada la operación, el servidor del sistema de archivos construye un mensaje de respuesta (por ejemplo, "éxito") y lo envía de vuelta al cliente, de nuevo a través del microkernel.</li>
+                        <li style="margin-bottom: 15px;"><strong>Recepción del Cliente:</strong> El cliente recibe el mensaje de respuesta y continúa su ejecución.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Seguridad y Protección</h3>
+                </div>
+                <div class="card-body">
+                    <p>En un sistema multiusuario y multitarea, es vital proteger los procesos entre sí. Ningún proceso debe poder interferir con la memoria o los archivos de otro proceso sin autorización. El SO implementa mecanismos de protección para garantizar este aislamiento. Además, gestiona la autenticación de usuarios (verificar quiénes son) y la autorización (definir a qué recursos pueden acceder).</p>
+                    
+                    <div class="grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-user-lock"></i>
+                                <h3>Autenticación</h3>
+                            </div>
+                            <div class="card-body">
+                                <p>Proceso de verificar la identidad de un usuario, generalmente mediante credenciales como nombre de usuario y contraseña, tokens de seguridad o métodos biométricos.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-key"></i>
+                                <h3>Autorización</h3>
+                            </div>
+                            <div class="card-body">
+                                <p>Proceso de determinar qué recursos y operaciones puede acceder un usuario autenticado, basado en políticas de seguridad y permisos asignados.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="comparacion" class="content-section">
+            <div class="section-header">
+                <i class="section-icon fas fa-chart-bar"></i>
+                <h2>Comparación de Arquitecturas</h2>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-table"></i>
+                    <h3>Tabla Comparativa</h3>
+                </div>
+                <div class="card-body">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Característica / Aspecto</th>
+                                <th>Monolítica</th>
+                                <th>Jerárquica (en Capas)</th>
+                                <th>Microkernel</th>
+                                <th>Híbrida</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Complejidad de Desarrollo</td>
+                                <td>Simple al inicio, pero compleja para grandes aplicaciones</td>
+                                <td>Compleja y requiere planificación cuidadosa</td>
+                                <td>Alta (manejo de IPC, comprensión de internos)</td>
+                                <td>Muy alta (combina complejidades de ambos)</td>
+                            </tr>
+                            <tr>
+                                <td>Mantenibilidad</td>
+                                <td>Baja (cambios requieren rediseño o recompilación completa)</td>
+                                <td>Alta (fácil depuración y actualización por capas)</td>
+                                <td>Alta (componentes actualizables independientemente)</td>
+                                <td>Media-Baja (diseño complejo dificulta el mantenimiento)</td>
+                            </tr>
+                            <tr>
+                                <td>Rendimiento</td>
+                                <td>Alto (comunicación directa entre módulos)</td>
+                                <td>Medio (sobrecarga de llamadas entre capas)</td>
+                                <td>Bajo (sobrecarga de IPC)</td>
+                                <td>Alto (optimizado para rendimiento)</td>
+                            </tr>
+                            <tr>
+                                <td>Seguridad</td>
+                                <td>Baja (un error puede comprometer todo el sistema)</td>
+                                <td>Media (aislamiento parcial entre capas)</td>
+                                <td>Alta (aislamiento completo entre componentes)</td>
+                                <td>Media-Alta (combinación de enfoques)</td>
+                            </tr>
+                            <tr>
+                                <td>Modularidad</td>
+                                <td>Baja (sistema unificado)</td>
+                                <td>Media (estructura en capas)</td>
+                                <td>Alta (componentes independientes)</td>
+                                <td>Media (modularidad selectiva)</td>
+                            </tr>
+                            <tr>
+                                <td>Ejemplos</td>
+                                <td>MS-DOS, Linux (kernel)</td>
+                                <td>THE, Multics</td>
+                                <td>Mach, QNX</td>
+                                <td>Windows NT, macOS</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Análisis de Rendimiento</h3>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-chart-pie"></i>
+                    <h3>Distribución de Componentes</h3>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="componentsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-balance-scale"></i>
+                    <h3>Compensaciones Fundamentales</h3>
+                </div>
+                <div class="card-body">
+                    <p>La elección de una arquitectura particular a menudo refleja una filosofía de diseño que prioriza ciertos atributos sobre otros. Se observa que los diseñadores de sistemas operativos deben considerar compensaciones fundamentales:</p>
+                    
+                    <div class="grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-bolt"></i>
+                                <h3>Rendimiento vs. Seguridad</h3>
+                            </div>
+                            <div class="card-body">
+                                <p>Las arquitecturas monolíticas priorizan el rendimiento bruto, mientras que las de microkernel priorizan la seguridad y el aislamiento, a costa de rendimiento.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-puzzle-piece"></i>
+                                <h3>Modularidad vs. Complejidad</h3>
+                            </div>
+                            <div class="card-body">
+                                <p>La modularidad mejora el mantenimiento pero aumenta la complejidad del diseño y la comunicación entre componentes.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-sync"></i>
+                                <h3>Estabilidad vs. Flexibilidad</h3>
+                            </div>
+                            <div class="card-body">
+                                <p>Los sistemas estables tienden a ser menos flexibles para cambios, mientras que los flexibles pueden sacrificar estabilidad.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-magic"></i>
+                                <h3>Abstracción vs. Control</h3>
+                            </div>
+                            <div class="card-body">
+                                <p>Mayor abstracción simplifica el uso pero puede limitar el control directo sobre el hardware y recursos.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="recursos" class="content-section">
+            <div class="section-header">
+                <i class="section-icon fas fa-book"></i>
+                <h2>Recursos y Referencias</h2>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h3>Recursos Educativos</h3>
+                </div>
+                <div class="card-body">
+                    <div class="grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-book"></i>
+                                <h3>Libros Recomendados</h3>
+                            </div>
+                            <div class="card-body">
+                                <ul style="list-style-type: none; padding-left: 0;">
+                                    <li style="margin-bottom: 15px;">
+                                        <strong>Sistemas Operativos Modernos</strong>
+                                        <p style="margin: 5px 0; color: #666;">Andrew S. Tanenbaum - Referencia clásica sobre arquitecturas de sistemas operativos.</p>
+                                        <span class="badge badge-primary">Fundamental</span>
+                                    </li>
+                                    <li style="margin-bottom: 15px;">
+                                        <strong>Operating System Concepts</strong>
+                                        <p style="margin: 5px 0; color: #666;">Abraham Silberschatz - Cobertura completa de todos los aspectos de los SO.</p>
+                                        <span class="badge badge-primary">Completo</span>
+                                    </li>
+                                    <li style="margin-bottom: 15px;">
+                                        <strong>Design of the UNIX Operating System</strong>
+                                        <p style="margin: 5px 0; color: #666;">Maurice J. Bach - Análisis profundo del diseño de Unix.</p>
+                                        <span class="badge badge-success">Especializado</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-video"></i>
+                                <h3>Cursos en Línea</h3>
+                            </div>
+                            <div class="card-body">
+                                <ul style="list-style-type: none; padding-left: 0;">
+                                    <li style="margin-bottom: 15px;">
+                                        <strong>Principles of Operating Systems</strong>
+                                        <p style="margin: 5px 0; color: #666;">Coursera - Universidad de Illinois</p>
+                                        <div class="tooltip">
+                                            <span class="badge badge-success">4.8★</span>
+                                            <span class="tooltip-text">Curso altamente calificado con proyectos prácticos</span>
+                                        </div>
+                                    </li>
+                                    <li style="margin-bottom: 15px;">
+                                        <strong>Operating Systems and You</strong>
+                                        <p style="margin: 5px 0; color: #666;">Coursera - Google IT Support</p>
+                                        <div class="tooltip">
+                                            <span class="badge badge-warning">4.5★</span>
+                                            <span class="tooltip-text">Enfoque práctico para principiantes</span>
+                                        </div>
+                                    </li>
+                                    <li style="margin-bottom: 15px;">
+                                        <strong>Advanced OS Concepts</strong>
+                                        <p style="margin: 5px 0; color: #666;">edX - MIT</p>
+                                        <div class="tooltip">
+                                            <span class="badge badge-danger">5.0★</span>
+                                            <span class="tooltip-text">Curso avanzado para estudiantes de posgrado</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-tools"></i>
+                    <h3>Herramientas y Tecnologías</h3>
+                </div>
+                <div class="card-body">
+                    <div class="grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-cloud"></i>
+                                <h3>Unikernels</h3>
+                            </div>
+                            <div class="card-body">
+                                <p>Una especialización para la computación en la nube. Un unikernel es un sistema operativo mínimo y de propósito único creado al compilar solo el código de la biblioteca del sistema operativo necesario para que una aplicación específica se ejecute directamente en un hipervisor.</p>
+                                <p>Esto resulta en imágenes de máquina virtual extremadamente pequeñas, seguras y rápidas, ya que no hay un SO de propósito general subyacente.</p>
+                                <div class="btn btn-success">
+                                    <i class="fas fa-play"></i> Más información
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-vial"></i>
+                                <h3>Entornos de Prueba</h3>
+                            </div>
+                            <div class="card-body">
+                                <ul style="list-style-type: none; padding-left: 0;">
+                                    <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>QEMU - Emulador de sistemas abierto</li>
+                                    <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>VirtualBox - Virtualización gratuita</li>
+                                    <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>Docker - Contenedores ligeros</li>
+                                    <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: var(--success); margin-right: 10px;"></i>Minix - Sistema operativo educativo</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-lightbulb"></i>
+                    <h3>Temas de Investigación Actuales</h3>
+                </div>
+                <div class="card-body">
+                    <div class="grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-robot"></i>
+                                <h3>IA en Sistemas Operativos</h3>
+                            </div>
+                            <div class="card-body">
+                                <p>Uso de técnicas de inteligencia artificial para optimizar la gestión de recursos, predicción de carga y toma de decisiones autónomas.</p>
+                                <span class="badge badge-warning">Emergente</span>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-lock"></i>
+                                <h3>Seguridad Avanzada</h3>
+                            </div>
+                            <div class="card-body">
+                                <p>Desarrollo de arquitecturas tolerantes a fallos y resistentes a ataques, con aislamiento de componentes mejorado.</p>
+                                <span class="badge badge-danger">Crítico</span>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-bolt"></i>
+                                <h3>Rendimiento Extremo</h3>
+                            </div>
+                            <div class="card-body">
+                                <p>Optimización para sistemas de alto rendimiento y aplicaciones de baja latencia, como trading algorítmico.</p>
+                                <span class="badge badge-success">Avanzado</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="scroll-to-top">
+            <i class="fas fa-arrow-up"></i>
+        </div>
+    </div>
+
+    <!--<footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Sobre este Recurso</h3>
+                <p>Estructura o Arquitectura de sistemas operativos, combinando conocimientos teóricos con ejemplos prácticos y herramientas interactivas.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Enlaces Rápidos</h3>
+                <ul>
+                    <li><a href="#introduccion">Introducción</a></li>
+                    <li><a href="#monolitica">Arquitectura Monolítica</a></li>
+                    <li><a href="#jerarquica">Arquitectura Jerárquica</a></li>
+                    <li><a href="#cliente-servidor">Cliente-Servidor</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <ul>
+                    <li><i class="fas fa-envelope"></i> ronaldanelsj@gmail.com</li>
+                    <li><i class="fas fa-phone"></i> +58 (412) 6583105</li>
+                    <li><i class="fas fa-map-marker-alt"></i> Zulia, Venezuela</li>
+                </ul>
+            </div>
+        </div>
+    </footer> -->
+     <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Unidad N° 3: Estructuras de Sistemas Operativos | Creado por Ing. Ronald Sierra</h3>
+                <p>© 2025 - Experiencia Interactiva de Aprendizaje.</p>
+            </div>
+    </footer>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons and sections
+                document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Show corresponding section
+                const sectionId = this.getAttribute('data-section');
+                document.getElementById(sectionId).classList.add('active');
+                
+                // Scroll to top
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Tab functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabGroup = this.parentElement;
+                const tabContentGroup = tabGroup.nextElementSibling;
+                
+                // Remove active class from all tabs and content
+                tabGroup.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tabContentGroup.parentElement.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Show corresponding content
+                const tabName = this.getAttribute('data-tab');
+                document.getElementById(`tab-${tabName}`).classList.add('active');
+            });
+        });
+
+        // Scroll to top button
+        const scrollToTopBtn = document.querySelector('.scroll-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.style.display = 'flex';
+            } else {
+                scrollToTopBtn.style.display = 'none';
+            }
+        });
+        
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.querySelector('.search-input');
+        const searchBtn = document.querySelector('.search-btn');
+        
+        searchBtn.addEventListener('click', performSearch);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+        
+        function performSearch() {
+            const query = searchInput.value.toLowerCase().trim();
+            if (query === '') return;
+            
+            // In a real application, this would search through content
+            // For this demo, we'll just show an alert
+            alert(`Buscando: "${query}"\n\nEn una aplicación real, esto buscaría en todo el contenido y resaltaría los resultados.`);
+        }
+
+        // Charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Performance Chart
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            const performanceChart = new Chart(performanceCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Monolítica', 'Jerárquica', 'Microkernel', 'Híbrida'],
+                    datasets: [{
+                        label: 'Rendimiento Relativo',
+                        data: [95, 70, 60, 85],
+                        backgroundColor: [
+                            'rgba(231, 76, 60, 0.8)',
+                            'rgba(243, 156, 18, 0.8)',
+                            'rgba(52, 152, 219, 0.8)',
+                            'rgba(46, 204, 113, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(231, 76, 60, 1)',
+                            'rgba(243, 156, 18, 1)',
+                            'rgba(52, 152, 219, 1)',
+                            'rgba(46, 204, 113, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Puntuación de Rendimiento'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Comparación de Rendimiento entre Arquitecturas'
+                        }
+                    }
+                }
+            });
+
+            // Components Chart
+            const componentsCtx = document.getElementById('componentsChart').getContext('2d');
+            const componentsChart = new Chart(componentsCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Monolítica', 'Jerárquica', 'Microkernel', 'Híbrida'],
+                    datasets: [{
+                        data: [30, 25, 20, 25],
+                        backgroundColor: [
+                            'rgba(231, 76, 60, 0.8)',
+                            'rgba(243, 156, 18, 0.8)',
+                            'rgba(52, 152, 219, 0.8)',
+                            'rgba(46, 204, 113, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(231, 76, 60, 1)',
+                            'rgba(243, 156, 18, 1)',
+                            'rgba(52, 152, 219, 1)',
+                            'rgba(46, 204, 113, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Distribución de Arquitecturas en Sistemas Modernos'
+                        }
+                    }
+                }
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 100,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Add active class to navigation based on scroll position
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('.content-section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            let currentSection = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 200;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop && pageYOffset < sectionTop + sectionHeight) {
+                    currentSection = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-section') === currentSection) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+```
